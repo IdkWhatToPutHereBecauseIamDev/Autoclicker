@@ -2,69 +2,80 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>Pro Autoclicker</title>
-    <link rel="stylesheet" href="style.css"> <style>
-        body, html { margin: 0; padding: 0; height: 100%; font-family: sans-serif; overflow: hidden; background: #1a1a1a; }
-        #wrapper { display: flex; height: 100vh; width: 100vw; }
+    <title>Sleek Autoclicker</title>
+    <style>
+        body, html { margin: 0; padding: 0; height: 100%; font-family: 'Segoe UI', sans-serif; overflow: hidden; background: #fdfdfd; }
+        #app-container { display: flex; height: 100vh; width: 100vw; }
         
-        /* Sidebar Settings */
+        /* Sidebar */
         #sidebar { 
-            width: 260px; background: #ffffff; padding: 30px; 
-            display: flex; flex-direction: column; gap: 20px; box-shadow: 2px 0 10px rgba(0,0,0,0.5); z-index: 100;
+            width: 260px; background: #fff; padding: 40px 25px; 
+            display: flex; flex-direction: column; gap: 30px; 
+            border-right: 1px solid #eee; z-index: 100;
         }
-        .label { color: #555; font-size: 14px; text-transform: uppercase; letter-spacing: 1px; }
-        input[type="number"] { font-size: 30px; border: none; border-bottom: 2px solid #4a90e2; outline: none; width: 100%; }
+        .setting-item { display: flex; flex-direction: column; }
+        .label { font-size: 22px; font-weight: 300; color: #777; margin-bottom: 5px; }
+        input[type="number"] { font-size: 32px; border: none; border-bottom: 1px solid #ddd; outline: none; color: #333; width: 100px; }
+        .hint { font-size: 14px; color: #aaa; line-height: 1.4; margin-top: 10px; }
 
-        /* Main Content */
-        #main-container { flex: 1; position: relative; display: flex; flex-direction: column; background: #eee; }
+        /* Main Workspace */
+        #workspace { flex: 1; position: relative; display: flex; flex-direction: column; background: #fff; }
         
-        /* THE WEBSITE BAR - Now at the Top */
-        #nav-bar { 
-            background: #333; padding: 15px; display: flex; gap: 10px; 
-            align-items: center; z-index: 50; border-bottom: 2px solid #4a90e2;
+        /* Input Bar (Website Bar) */
+        #nav-header { 
+            padding: 20px; background: #f8f8f8; display: flex; 
+            justify-content: center; border-bottom: 1px solid #eee; z-index: 50;
         }
-        #url-input { 
-            flex: 1; padding: 10px 15px; border-radius: 4px; border: 1px solid #555; 
-            background: #222; color: #fff; font-size: 16px;
-        }
-        #btn-load { padding: 10px 20px; background: #4a90e2; color: white; border: none; cursor: pointer; font-weight: bold; border-radius: 4px; }
-
-        /* Iframe Viewport */
-        #site-view { flex: 1; width: 100%; border: none; background: white; }
-
-        /* THE BLUE DOT */
-        #clicker-dot {
-            position: absolute; width: 20px; height: 20px; background: #fff; border-radius: 50%;
-            box-shadow: 0 0 25px 15px rgba(60, 100, 255, 0.8);
-            cursor: move; top: 150px; left: 300px; z-index: 999;
-            pointer-events: auto; /* Ensures it can be grabbed */
+        #url-bar { 
+            width: 60%; padding: 12px 25px; border-radius: 30px; 
+            border: 1px solid #ddd; font-size: 16px; outline: none;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.05);
         }
 
-        #footer-tag { 
-            position: absolute; bottom: 20px; width: 100%; text-align: center; 
-            font-size: 40px; font-weight: 100; color: rgba(0,0,0,0.3); pointer-events: none; 
+        /* Iframe */
+        #site-display { flex: 1; width: 100%; border: none; }
+
+        /* THE DRAGGABLE BLUE DOT */
+        #clicker-target {
+            position: absolute; width: 22px; height: 22px; background: #fff; border-radius: 50%;
+            box-shadow: 0 0 30px 15px rgba(60, 110, 255, 0.7);
+            cursor: grab; top: 50%; left: 50%; z-index: 999;
+            transform: translate(-50%, -50%);
+            transition: transform 0.05s ease;
+        }
+        #clicker-target:active { cursor: grabbing; }
+
+        /* Background Text */
+        #footer-msg { 
+            position: absolute; bottom: 40px; width: 100%; text-align: center; 
+            font-size: 45px; font-weight: 200; color: #444; pointer-events: none; z-index: 10;
         }
     </style>
 </head>
 <body>
 
-<div id="wrapper">
+<div id="app-container">
     <div id="sidebar">
-        <div class="field"><div class="label">Speed</div><input type="number" id="speed" value="1"></div>
-        <div class="field"><div class="label">CPS</div><input type="number" id="cps" value="100"></div>
-        <p style="font-size: 12px; color: #999;">Drag the blue light to the button you want to click.</p>
+        <div class="setting-item">
+            <span class="label">Speed</span>
+            <input type="number" id="speed-val" value="1">
+        </div>
+        <div class="setting-item">
+            <span class="label">Clicks Per Second</span>
+            <input type="number" id="cps-val" value="100">
+        </div>
+        <p class="hint">Drag blue dot to move clicker</p>
     </div>
 
-    <div id="main-container">
-        <div id="nav-bar">
-            <input type="text" id="url-input" placeholder="Enter Website (e.g. wikipedia.org)">
-            <button id="btn-load">GO</button>
+    <div id="workspace">
+        <div id="nav-header">
+            <input type="text" id="url-bar" value="https://www.google.com/webhp?igu=1">
         </div>
 
-        <iframe id="site-view" src="about:blank"></iframe>
+        <iframe id="site-display" src="https://www.google.com/webhp?igu=1"></iframe>
         
-        <div id="clicker-dot"></div>
-        <div id="footer-tag">Blue = click position</div>
+        <div id="clicker-target"></div>
+        <div id="footer-msg">Blue = click position</div>
     </div>
 </div>
 

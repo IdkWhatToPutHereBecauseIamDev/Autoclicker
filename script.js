@@ -1,15 +1,13 @@
-const dot = document.getElementById('clicker-dot');
-const urlInput = document.getElementById('url-input');
-const btnLoad = document.getElementById('btn-load');
-const siteView = document.getElementById('site-view');
-const cpsInput = document.getElementById('cps');
+const dot = document.getElementById('clicker-target');
+const urlBar = document.getElementById('url-bar');
+const frame = document.getElementById('site-display');
+const cpsInput = document.getElementById('cps-val');
 
 let isDragging = false;
 
-// --- 1. MOVE THE DOT ---
+// --- DRAG LOGIC ---
 dot.addEventListener('mousedown', (e) => {
     isDragging = true;
-    dot.style.transition = 'none'; // Stop animations while dragging
 });
 
 document.addEventListener('mouseup', () => {
@@ -18,39 +16,41 @@ document.addEventListener('mouseup', () => {
 
 document.addEventListener('mousemove', (e) => {
     if (isDragging) {
-        // Move the dot to follow the mouse
-        // Subtracting 10 keeps the mouse centered on the 20px dot
-        dot.style.left = (e.clientX - 10) + 'px';
-        dot.style.top = (e.clientY - 10) + 'px';
+        // Get workspace boundaries
+        const rect = document.getElementById('workspace').getBoundingClientRect();
+        
+        // Calculate position relative to workspace
+        let x = e.clientX - rect.left;
+        let y = e.clientY - rect.top;
+
+        dot.style.left = x + 'px';
+        dot.style.top = y + 'px';
     }
 });
 
-// --- 2. LOAD THE WEBSITE ---
-btnLoad.addEventListener('click', () => {
-    let url = urlInput.value.trim();
-    if (!url.startsWith('http')) {
-        url = 'https://' + url;
+// --- LOAD WEBSITE LOGIC ---
+urlBar.addEventListener('keypress', (e) => {
+    if (e.key === 'Enter') {
+        let url = urlBar.value.trim();
+        if (!url.startsWith('http')) {
+            url = 'https://' + url;
+        }
+        frame.src = url;
     }
-    siteView.src = url;
 });
 
-// Allow pressing "Enter" in the bar
-urlInput.addEventListener('keypress', (e) => {
-    if (e.key === 'Enter') btnLoad.click();
-});
-
-// --- 3. CLICK ANIMATION ---
-function animateClick() {
+// --- CLICK SIMULATION (Visual Only) ---
+function clickLoop() {
     const cps = parseInt(cpsInput.value) || 1;
-    const rate = 1000 / cps;
+    const interval = 1000 / cps;
 
-    // Visual pulse
-    dot.style.transform = 'scale(1.2)';
+    // Simulate click effect
+    dot.style.transform = 'translate(-50%, -50%) scale(1.2)';
     setTimeout(() => {
-        dot.style.transform = 'scale(1)';
+        dot.style.transform = 'translate(-50%, -50%) scale(1)';
     }, 50);
 
-    setTimeout(animateClick, rate);
+    setTimeout(clickLoop, interval);
 }
 
-animateClick();
+clickLoop();
